@@ -1,8 +1,11 @@
 import { Component } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { TranslationService } from '../../services/translation.service';
+import { AuthService, User } from '../../services/auth.service';
+import { CartService } from '../../services/cart.service';
+import { Observable, map } from 'rxjs';
 
 @Component({
   selector: 'app-navbar',
@@ -13,8 +16,20 @@ import { TranslationService } from '../../services/translation.service';
 })
 export class NavbarComponent {
   showLanguageDropdown = false;
+  cartCount$: Observable<number>;
+  currentUser$: Observable<User | null>;
 
-  constructor(public translationService: TranslationService) { }
+  constructor(
+    public translationService: TranslationService,
+    private authService: AuthService,
+    private cartService: CartService,
+    private router: Router
+  ) {
+    this.cartCount$ = this.cartService.cartItems$.pipe(
+      map(items => items.reduce((acc, item) => acc + item.quantity, 0))
+    );
+    this.currentUser$ = this.authService.currentUser$;
+  }
 
   toggleLanguageDropdown(): void {
     this.showLanguageDropdown = !this.showLanguageDropdown;
@@ -27,5 +42,9 @@ export class NavbarComponent {
 
   getCurrentLanguage(): string {
     return this.translationService.getCurrentLanguage();
+  }
+
+  logout(): void {
+    this.authService.logout();
   }
 }

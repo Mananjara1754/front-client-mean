@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Observable } from 'rxjs';
 import { ShopService, Shop } from '../../services/shop.service';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-shop-list',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, TranslateModule],
   templateUrl: './shop-list.component.html',
   styleUrl: './shop-list.component.css'
 })

@@ -161,5 +161,8 @@
         "previous": "Précédent",
         "submit": "Soumettre",
         "reset": "Réinitialiser"
+    },
+    "list_shop": {
+        "title": "Boutiques"
     }
 }
