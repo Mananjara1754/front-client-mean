@@ -7,14 +7,32 @@ export interface Product {
   _id: string;
   name: string;
   description: string;
-  price: number;
-  stockQuantity: number;
   category: string;
-  shop: { _id: string, name: string } | string;
-  isSponsored: boolean;
-  discount: number;
-  imageUrl?: string;
+  price: {
+    current: number;
+    currency: string;
+  };
+  stock: {
+    quantity: number;
+    status: string;
+    low_stock_threshold: number;
+  };
+  promotion: {
+    is_active: boolean;
+    discount_percent: number;
+  };
+  shop_id: {
+    _id: string;
+    name: string;
+  };
+  images: string[];
+  is_active: boolean;
+  price_history: any[];
+  __v: number;
+  created_at: string;
+  updated_at: string;
 }
+
 
 @Injectable({
   providedIn: 'root'

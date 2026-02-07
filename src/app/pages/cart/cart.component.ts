@@ -25,7 +25,7 @@ export class CartComponent implements OnInit {
   ) {
     this.cartItems$ = this.cartService.cartItems$;
     this.total$ = this.cartItems$.pipe(
-      map(items => items.reduce((acc, item) => acc + (item.product.price * item.quantity), 0))
+      map(items => items.reduce((acc, item) => acc + (item.product.price.current * item.quantity), 0))
     );
   }
 
@@ -51,9 +51,9 @@ export class CartComponent implements OnInit {
     // Ideally, we should validate this in addToCart or split here.
     // Let's implement simple check:
 
-    const shopId = items[0].product.shop._id || items[0].product.shop; // Handle populated vs unpopulated
+    const shopId = items[0].product.shop_id._id;
     const backendItems = items.map(i => ({ product: i.product._id, quantity: i.quantity }));
-    const totalPrice = items.reduce((acc, i) => acc + (i.product.price * i.quantity), 0);
+    const totalPrice = items.reduce((acc, i) => acc + (i.product.price.current * i.quantity), 0);
 
     const orderData = {
       shop: shopId,

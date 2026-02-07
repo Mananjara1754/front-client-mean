@@ -6,7 +6,7 @@
             <div class="cart-item" *ngFor="let item of cartItems$ | async">
                 <div class="item-info">
                     <h3>{{ item.product.name }}</h3>
-                    <p class="price">${{ item.product.price }}</p>
+                    <p class="price">${{ item.product.price.current }}</p>
                 </div>
 
                 <div class="quantity-controls">
@@ -16,7 +16,7 @@
                 </div>
 
                 <div class="item-total">
-                    ${{ item.product.price * item.quantity }}
+                    ${{ item.product.price.current * item.quantity }}
                 </div>
 
                 <button class="remove-btn" (click)="removeItem(item.product._id)">×</button>
