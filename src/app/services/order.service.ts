@@ -4,17 +4,19 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 export interface OrderItem {
-  product: string; // Product ID
+  product_id: string;
   quantity: number;
 }
 
 export interface Order {
   _id?: string;
-  shop: string; // Shop ID
+  shop_id: string; // Used in request
+  shop?: { _id: string, name: string }; // Used in response (populated)
   items: OrderItem[];
-  totalPrice: number;
-  status: string;
-  createdAt: string;
+  delivery: any;
+  totalPrice?: number;
+  status?: string;
+  createdAt?: string;
   buyer?: any;
 }
 
@@ -26,7 +28,7 @@ export class OrderService {
 
   constructor(private http: HttpClient) { }
 
-  createOrder(orderData: { shop: string; items: OrderItem[]; totalPrice: number }): Observable<Order> {
+  createOrder(orderData: { shop_id: string; items: OrderItem[]; delivery: any }): Observable<Order> {
     return this.http.post<Order>(this.apiUrl, orderData);
   }
 

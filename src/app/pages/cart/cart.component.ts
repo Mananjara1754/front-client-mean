@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { CartService, CartItem } from '../../services/cart.service';
 import { OrderService } from '../../services/order.service';
+import { AuthService } from '../../services/auth.service';
 import { Observable, map } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 
@@ -21,6 +22,7 @@ export class CartComponent implements OnInit {
   constructor(
     private cartService: CartService,
     private orderService: OrderService,
+    private authService: AuthService,
     private router: Router
   ) {
     this.cartItems$ = this.cartService.cartItems$;
@@ -42,23 +44,25 @@ export class CartComponent implements OnInit {
   checkout() {
     this.isLoading = true;
     const items = this.cartService.getItems();
-    if (items.length === 0) return;
+    if (items.length === 0) {
+      this.isLoading = false;
+      return;
+    }
 
-    // Group items by shop? MVP assumes single shop order or backend handles multiple?
-    // Backend `addOrderItems` takes `shop` ID. So we can only order from ONE shop at a time efficiently
-    // OR we need to split the order.
-    // For MVP, let's assume all items are from same shop or pick the first shop.
-    // Ideally, we should validate this in addToCart or split here.
-    // Let's implement simple check:
+    if (!this.authService.isAuthenticated()) {
+      alert('Vous devez être connecté pour passer une commande.');
+      this.router.navigate(['/login']);
+      this.isLoading = false;
+      return;
+    }
 
     const shopId = items[0].product.shop_id._id;
-    const backendItems = items.map(i => ({ product: i.product._id, quantity: i.quantity }));
-    const totalPrice = items.reduce((acc, i) => acc + (i.product.price.current * i.quantity), 0);
+    const backendItems = items.map(i => ({ product_id: i.product._id, quantity: i.quantity }));
 
     const orderData = {
-      shop: shopId,
+      shop_id: shopId,
       items: backendItems,
-      totalPrice: totalPrice
+      delivery: {}
     };
 
     this.orderService.createOrder(orderData).subscribe({

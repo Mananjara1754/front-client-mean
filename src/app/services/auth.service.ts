@@ -11,6 +11,7 @@ export interface User {
     name: string;
     email: string;
     role: string;
+    shop_id?: string;
 }
 
 export interface AuthResponse {
@@ -19,6 +20,7 @@ export interface AuthResponse {
     email: string;
     role: string;
     token: string;
+    shop_id?: string;
 }
 
 @Injectable({
@@ -28,6 +30,10 @@ export class AuthService {
     private apiUrl = `${environment.apiUrl}/auth`;
     private currentUserSubject = new BehaviorSubject<User | null>(null);
     public currentUser$ = this.currentUserSubject.asObservable();
+
+    public get currentUserValue(): User | null {
+        return this.currentUserSubject.value;
+    }
 
     constructor(private http: HttpClient, private router: Router) {
         this.loadUserFromToken();
@@ -58,7 +64,8 @@ export class AuthService {
                     _id: response._id,
                     name: response.name,
                     email: response.email,
-                    role: response.role
+                    role: response.role,
+                    shop_id: response.shop_id
                 };
                 localStorage.setItem('user', JSON.stringify(user));
                 this.currentUserSubject.next(user);
@@ -74,7 +81,8 @@ export class AuthService {
                     _id: response._id,
                     name: response.name,
                     email: response.email,
-                    role: response.role
+                    role: response.role,
+                    shop_id: response.shop_id
                 };
                 localStorage.setItem('user', JSON.stringify(user));
                 this.currentUserSubject.next(user);
