@@ -12,34 +12,51 @@
         </div>
     </div>
 
-    <!-- Products Grid -->
-    <h2 class="section-title">Available Products</h2>
+    <!-- Actions Row: Search & Section Title -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 mt-12">
+        <h2 class="section-title !mb-0">{{ 'shopDetail.availableProducts' | translate }}</h2>
+
+        <div class="relative w-full md:w-80">
+            <img src="/assets/image/icons/ic_search.svg" alt="Search icon"
+                class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 z-10">
+            <input type="text" [placeholder]="'common.search' | translate" (input)="onSearch($event)"
+                class="w-full pl-12 pr-4 py-3 rounded-2xl border border-slate-200 bg-white/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 transition-all font-medium text-slate-900">
+        </div>
+    </div>
 
     <div class="products-grid" *ngIf="products.length > 0; else noProducts">
         <div class="product-card glass" *ngFor="let product of products">
             <div class="product-image">
                 <span class="prod-icon">🍎</span>
-                <span class="badge discount" *ngIf="product.discount > 0">-{{ product.discount }}%</span>
+                <span class="badge discount" *ngIf="product.promotion.discount_percent > 0">-{{
+                    product.promotion.discount_percent }}%</span>
             </div>
             <div class="product-info">
                 <h3>{{ product.name }}</h3>
                 <p class="desc">{{ product.description }}</p>
                 <div class="price-row">
-                    <span class="price">${{ product.price }}</span>
-                    <span class="stock" [class.low]="product.stockQuantity < 5">
-                        {{ product.stockQuantity > 0 ? product.stockQuantity + ' left' : 'Out of Stock' }}
+                    <span class="price">{{ product.price.current | priceFormat }} {{ product.price.currency }}</span>
+                    <span class="stock" [class.low]="product.stock.quantity < 5">
+                        {{ product.stock.quantity > 0 ? product.stock.quantity + ' ' + ('shopDetail.left' | translate) :
+                        ('shopDetail.outOfStock' | translate) }}
                     </span>
                 </div>
-                <button class="add-btn" (click)="addToCart(product)" [disabled]="product.stockQuantity === 0">
-                    {{ product.stockQuantity === 0 ? 'Sold Out' : '+ Add to Cart' }}
+                <button class="add-btn" (click)="addToCart(product)" [disabled]="product.stock.quantity === 0">
+                    {{ product.stock.quantity === 0 ? ('shopDetail.soldOut' | translate) : ('shopDetail.addToCart' |
+                    translate) }}
                 </button>
             </div>
         </div>
     </div>
 
+    <app-pagination *ngIf="totalPages > 1 || totalItems > pageSize" [currentPage]="currentPage"
+        [totalPages]="totalPages" [totalItems]="totalItems" [pageSize]="pageSize" (pageChange)="onPageChange($event)"
+        (limitChange)="onLimitChange($event)">
+    </app-pagination>
+
     <ng-template #noProducts>
         <div class="empty-state glass">
-            <p>No products available in this shop yet.</p>
+            <p>{{ 'shopDetail.noProducts' | translate }}</p>
         </div>
     </ng-template>
 </div>

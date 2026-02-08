@@ -3,12 +3,16 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { CartService, CartItem } from '../../services/cart.service';
 import { OrderService } from '../../services/order.service';
+import { AuthService } from '../../services/auth.service';
 import { Observable, map } from 'rxjs';
+import { TranslateModule } from '@ngx-translate/core';
+import { AuthModalComponent } from '../../components/auth-modal/auth-modal.component';
+import { PriceFormatPipe } from '../../pipes/price-format.pipe';
 
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, TranslateModule, AuthModalComponent, PriceFormatPipe],
   templateUrl: './cart.component.html',
   styleUrl: './cart.component.css'
 })
@@ -16,15 +20,17 @@ export class CartComponent implements OnInit {
   cartItems$: Observable<CartItem[]>;
   total$: Observable<number>;
   isLoading = false;
+  isAuthModalVisible = false;
 
   constructor(
     private cartService: CartService,
     private orderService: OrderService,
+    private authService: AuthService,
     private router: Router
   ) {
     this.cartItems$ = this.cartService.cartItems$;
     this.total$ = this.cartItems$.pipe(
-      map(items => items.reduce((acc, item) => acc + (item.product.price * item.quantity), 0))
+      map(items => items.reduce((acc, item) => acc + (item.product.price.current * item.quantity), 0))
     );
   }
 
@@ -41,23 +47,24 @@ export class CartComponent implements OnInit {
   checkout() {
     this.isLoading = true;
     const items = this.cartService.getItems();
-    if (items.length === 0) return;
+    if (items.length === 0) {
+      this.isLoading = false;
+      return;
+    }
 
-    // Group items by shop? MVP assumes single shop order or backend handles multiple?
-    // Backend `addOrderItems` takes `shop` ID. So we can only order from ONE shop at a time efficiently
-    // OR we need to split the order.
-    // For MVP, let's assume all items are from same shop or pick the first shop.
-    // Ideally, we should validate this in addToCart or split here.
-    // Let's implement simple check:
+    if (!this.authService.isAuthenticated()) {
+      this.isAuthModalVisible = true;
+      this.isLoading = false;
+      return;
+    }
 
-    const shopId = items[0].product.shop._id || items[0].product.shop; // Handle populated vs unpopulated
-    const backendItems = items.map(i => ({ product: i.product._id, quantity: i.quantity }));
-    const totalPrice = items.reduce((acc, i) => acc + (i.product.price * i.quantity), 0);
+    const shopId = items[0].product.shop_id._id;
+    const backendItems = items.map(i => ({ product_id: i.product._id, quantity: i.quantity }));
 
     const orderData = {
-      shop: shopId,
+      shop_id: shopId,
       items: backendItems,
-      totalPrice: totalPrice
+      delivery: {}
     };
 
     this.orderService.createOrder(orderData).subscribe({
@@ -75,5 +82,14 @@ export class CartComponent implements OnInit {
         // But for time constraint, this is MVP behavior.
       }
     });
+  }
+
+  handleAuthConfirm() {
+    this.isAuthModalVisible = false;
+    this.router.navigate(['/login']);
+  }
+
+  handleAuthCancel() {
+    this.isAuthModalVisible = false;
   }
 }

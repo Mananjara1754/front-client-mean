@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { Product } from './product.service';
 
 export interface CartItem {
-  product: any; // Type should be Product
+  product: Product;
   quantity: number;
 }
 
@@ -33,7 +34,7 @@ export class CartService {
     this.cartItemsSubject.next(items);
   }
 
-  addToCart(product: any, quantity: number = 1) {
+  addToCart(product: Product, quantity: number = 1) {
     const items = this.cartItemsSubject.value;
     const existingItem = items.find(item => item.product._id === product._id);
 
@@ -70,7 +71,7 @@ export class CartService {
   }
 
   getTotal(): number {
-    return this.cartItemsSubject.value.reduce((acc, item) => acc + (item.product.price * item.quantity), 0);
+    return this.cartItemsSubject.value.reduce((acc, item) => acc + (item.product.price.current * item.quantity), 0);
   }
 
   getItems(): CartItem[] {

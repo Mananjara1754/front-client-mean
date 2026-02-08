@@ -1,28 +1,40 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
+import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { ShopService, Shop } from '../../services/shop.service';
-import { ProductService, Product } from '../../services/product.service';
+import { ProductService, Product, PaginatedResponse } from '../../services/product.service';
 import { CartService } from '../../services/cart.service';
+import { PaginationComponent } from '../../components/pagination/pagination.component';
+import { TranslateModule } from '@ngx-translate/core';
+import { ToastService } from '../../services/toast.service';
+import { PriceFormatPipe } from '../../pipes/price-format.pipe';
 
 @Component({
   selector: 'app-shop-detail',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule, PriceFormatPipe, PaginationComponent],
   templateUrl: './shop-detail.component.html',
   styleUrl: './shop-detail.component.css'
 })
-export class ShopDetailComponent implements OnInit {
+export class ShopDetailComponent implements OnInit, OnDestroy {
   shopId: string | null = null;
   shop: Shop | null = null;
   products: Product[] = [];
   isLoading = true;
+  currentPage = 1;
+  totalPages = 1;
+  totalItems = 0;
+  pageSize = 8;
+  searchTerm = '';
+  private searchSubject = new Subject<string>();
 
   constructor(
     private route: ActivatedRoute,
     private shopService: ShopService,
     private productService: ProductService,
-    private cartService: CartService
+    private cartService: CartService,
+    private toastService: ToastService
   ) { }
 
   ngOnInit() {
@@ -30,6 +42,22 @@ export class ShopDetailComponent implements OnInit {
     if (this.shopId) {
       this.loadData(this.shopId);
     }
+
+    // Initialize debounced search
+    this.searchSubject.pipe(
+      debounceTime(400),
+      distinctUntilChanged()
+    ).subscribe(term => {
+      this.searchTerm = term;
+      this.currentPage = 1; // Reset to first page
+      if (this.shopId) {
+        this.loadProducts(this.shopId);
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    this.searchSubject.complete();
   }
 
   loadData(id: string) {
@@ -46,18 +74,46 @@ export class ShopDetailComponent implements OnInit {
   }
 
   loadProducts(shopId: string) {
-    this.productService.getProducts({ shop: shopId }).subscribe({
-      next: (products) => {
-        this.products = products;
+    this.productService.getProducts({
+      shop_id: shopId,
+      page: this.currentPage,
+      limit: this.pageSize,
+      search: this.searchTerm
+    }).subscribe({
+      next: (response: PaginatedResponse<Product>) => {
+        this.products = response.products;
+        this.totalPages = response.pages;
+        this.totalItems = response.total;
         this.isLoading = false;
       },
       error: () => this.isLoading = false
     });
   }
 
+  onSearch(event: Event) {
+    const term = (event.target as HTMLInputElement).value;
+    this.searchSubject.next(term);
+  }
+
+  onPageChange(page: number) {
+    this.currentPage = page;
+    if (this.shopId) {
+      this.loadProducts(this.shopId);
+      // Smooth scroll to top of products
+      window.scrollTo({ top: 300, behavior: 'smooth' });
+    }
+  }
+
+  onLimitChange(limit: number) {
+    this.pageSize = limit;
+    this.currentPage = 1; // Reset to first page
+    if (this.shopId) {
+      this.loadProducts(this.shopId);
+    }
+  }
+
   addToCart(product: Product) {
     this.cartService.addToCart(product);
-    // Optional: Show toast
-    alert(`Added ${product.name} to cart!`);
+    this.toastService.success('common.addedToCart', { name: product.name });
   }
 }
