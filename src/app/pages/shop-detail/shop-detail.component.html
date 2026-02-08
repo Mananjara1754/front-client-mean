@@ -40,6 +40,11 @@
         </div>
     </div>
 
+    <app-pagination *ngIf="totalPages > 1 || totalItems > pageSize" [currentPage]="currentPage"
+        [totalPages]="totalPages" [totalItems]="totalItems" [pageSize]="pageSize" (pageChange)="onPageChange($event)"
+        (limitChange)="onLimitChange($event)">
+    </app-pagination>
+
     <ng-template #noProducts>
         <div class="empty-state glass">
             <p>{{ 'shopDetail.noProducts' | translate }}</p>
