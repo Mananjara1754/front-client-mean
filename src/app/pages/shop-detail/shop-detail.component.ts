@@ -75,7 +75,7 @@ export class ShopDetailComponent implements OnInit, OnDestroy {
 
   loadProducts(shopId: string) {
     this.productService.getProducts({
-      shop: shopId,
+      shop_id: shopId,
       page: this.currentPage,
       limit: this.pageSize,
       search: this.searchTerm

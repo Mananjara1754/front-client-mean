@@ -49,9 +49,9 @@ export class ProductService {
 
   constructor(private http: HttpClient) { }
 
-  getProducts(filters?: { shop?: string; category?: string; search?: string; page?: number; limit?: number }): Observable<PaginatedResponse<Product>> {
+  getProducts(filters?: { shop_id?: string; category?: string; search?: string; page?: number; limit?: number }): Observable<PaginatedResponse<Product>> {
     let params = new HttpParams();
-    if (filters?.shop) params = params.set('shop', filters.shop);
+    if (filters?.shop_id) params = params.set('shop_id', filters.shop_id);
     if (filters?.category) params = params.set('category', filters.category);
     if (filters?.search) params = params.set('search', filters.search);
     if (filters?.page) params = params.set('page', filters.page.toString());
