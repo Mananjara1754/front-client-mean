@@ -118,6 +118,7 @@
         "description": "Description",
         "ingredients": "Ingrédients",
         "availableProducts": "Produits disponibles",
+        "searchPlaceholder": "Rechercher un produit...",
         "left": "restant(s)",
         "soldOut": "Épuisé",
         "noProducts": "Aucun produit disponible dans cette boutique pour le moment."

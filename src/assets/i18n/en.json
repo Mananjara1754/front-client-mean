@@ -118,6 +118,7 @@
         "description": "Description",
         "ingredients": "Ingredients",
         "availableProducts": "Available Products",
+        "searchPlaceholder": "Search products...",
         "left": "left",
         "soldOut": "Sold Out",
         "noProducts": "No products available in this shop yet."

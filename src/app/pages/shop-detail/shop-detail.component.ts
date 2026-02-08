@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
+import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { ShopService, Shop } from '../../services/shop.service';
 import { ProductService, Product, PaginatedResponse } from '../../services/product.service';
 import { CartService } from '../../services/cart.service';
@@ -16,7 +17,7 @@ import { PriceFormatPipe } from '../../pipes/price-format.pipe';
   templateUrl: './shop-detail.component.html',
   styleUrl: './shop-detail.component.css'
 })
-export class ShopDetailComponent implements OnInit {
+export class ShopDetailComponent implements OnInit, OnDestroy {
   shopId: string | null = null;
   shop: Shop | null = null;
   products: Product[] = [];
@@ -24,7 +25,9 @@ export class ShopDetailComponent implements OnInit {
   currentPage = 1;
   totalPages = 1;
   totalItems = 0;
-  pageSize = 8; // Default limit
+  pageSize = 8;
+  searchTerm = '';
+  private searchSubject = new Subject<string>();
 
   constructor(
     private route: ActivatedRoute,
@@ -39,6 +42,22 @@ export class ShopDetailComponent implements OnInit {
     if (this.shopId) {
       this.loadData(this.shopId);
     }
+
+    // Initialize debounced search
+    this.searchSubject.pipe(
+      debounceTime(400),
+      distinctUntilChanged()
+    ).subscribe(term => {
+      this.searchTerm = term;
+      this.currentPage = 1; // Reset to first page
+      if (this.shopId) {
+        this.loadProducts(this.shopId);
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    this.searchSubject.complete();
   }
 
   loadData(id: string) {
@@ -58,7 +77,8 @@ export class ShopDetailComponent implements OnInit {
     this.productService.getProducts({
       shop: shopId,
       page: this.currentPage,
-      limit: this.pageSize
+      limit: this.pageSize,
+      search: this.searchTerm
     }).subscribe({
       next: (response: PaginatedResponse<Product>) => {
         this.products = response.products;
@@ -68,6 +88,11 @@ export class ShopDetailComponent implements OnInit {
       },
       error: () => this.isLoading = false
     });
+  }
+
+  onSearch(event: Event) {
+    const term = (event.target as HTMLInputElement).value;
+    this.searchSubject.next(term);
   }
 
   onPageChange(page: number) {
