@@ -121,7 +121,7 @@ export class CartComponent implements OnInit {
       error: (err) => {
         console.error('Checkout failed', err);
         this.isLoading = false;
-        alert('Échec de la commande! Veuillez réessayer.');
+        this.toastService.error('Échec de la commande! Veuillez réessayer.');
       }
     });
   }
