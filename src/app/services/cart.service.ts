@@ -71,7 +71,10 @@ export class CartService {
   }
 
   getTotal(): number {
-    return this.cartItemsSubject.value.reduce((acc, item) => acc + (item.product.price.current * item.quantity), 0);
+    return this.cartItemsSubject.value.reduce((acc, item) => {
+      const price = item.product.price.ttc || (item.product.price.current * 1.2);
+      return acc + (price * item.quantity);
+    }, 0);
   }
 
   getItems(): CartItem[] {

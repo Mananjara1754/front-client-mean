@@ -10,6 +10,7 @@ export interface Product {
   category: string;
   price: {
     current: number;
+    ttc?: number;
     currency: string;
   };
   stock: {
