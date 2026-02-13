@@ -148,13 +148,116 @@ export class ShopDetailComponent implements OnInit, OnDestroy {
     }
   }
 
-  isShopOpen(): boolean {
-    if (!this.shop) return false;
+  getShopStatus(): { isOpen: boolean, text: string, details: string } {
+    if (!this.shop || !this.shop.opening_hours) return { isOpen: false, text: 'shopDetail.closed', details: '' };
+
     const now = new Date();
     const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
     const dayName = days[now.getDay()];
     // @ts-ignore
     const dayHours = this.shop.opening_hours[dayName];
-    return dayHours && !dayHours.is_closed;
+
+    if (!dayHours || dayHours.is_closed) {
+      return { isOpen: false, text: 'shopDetail.closed', details: '' };
+    }
+
+    return {
+      isOpen: true,
+      text: 'shopDetail.open',
+      details: `${dayHours.open} - ${dayHours.close}`
+    };
+  }
+
+  isShopOpen(): boolean {
+    return this.getShopStatus().isOpen;
+  }
+
+  // Product Details Modal
+  selectedProduct: Product | null = null;
+  showDetailsModal = false;
+  chart: any;
+
+  openDetails(product: Product) {
+    this.selectedProduct = product;
+    this.showDetailsModal = true;
+
+    // Initialize chart after view updates
+    setTimeout(() => {
+      this.initChart(product);
+    }, 100);
+  }
+
+  closeDetails() {
+    this.showDetailsModal = false;
+    this.selectedProduct = null;
+    if (this.chart) {
+      this.chart.destroy();
+      this.chart = null;
+    }
+  }
+
+  initChart(product: Product) {
+    if (!product.price_history || product.price_history.length === 0) return;
+
+    const ctx = document.getElementById('priceHistoryChart') as HTMLCanvasElement;
+    if (!ctx) return;
+
+    if (this.chart) {
+      this.chart.destroy();
+    }
+
+    // @ts-ignore
+    import('chart.js/auto').then(({ Chart }) => {
+        const labels = product.price_history.map(h => new Date(h.from).toLocaleDateString());
+        const data = product.price_history.map(h => h.price);
+
+        this.chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Price History',
+                    data: data,
+                    borderColor: '#f59e0b', // Amber 500
+                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#f59e0b',
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: '#f1f5f9'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    });
+  }
+
+  formatNumber(value: number): string {
+    return new Intl.NumberFormat('fr-MG', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(value);
   }
 }

@@ -8,6 +8,7 @@ export interface Shop {
   name: string;
   category: string;
   description: string;
+  logo?: string;
   location: {
     floor: number;
     zone: string;
