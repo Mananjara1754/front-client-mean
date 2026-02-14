@@ -2,13 +2,31 @@
     <div class="container mx-auto px-4 py-8 md:py-12 max-w-7xl">
 
         <!-- Header Section -->
-        <div class="mb-8 md:mb-10">
-            <h1 class="text-4xl md:text-5xl font-black text-slate-900 mb-3 tracking-tight">
-                {{ 'orders.title' | translate }}
-            </h1>
-            <p class="text-slate-600 text-lg font-medium">
-                {{ 'orders.subtitle' | translate }}
-            </p>
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 md:mb-12">
+            <div>
+                <h1 class="text-4xl md:text-5xl font-black text-slate-900 mb-3 tracking-tight">
+                    {{ 'orders.title' | translate }}
+                </h1>
+                <p class="text-slate-600 text-lg font-medium">
+                    {{ 'orders.subtitle' | translate }}
+                </p>
+            </div>
+
+            <!-- Enhanced Date Filter -->
+            <div class="relative group">
+                <label class="block text-[10px] uppercase font-black text-slate-400 mb-2 tracking-widest ml-1">
+                    {{ 'orders.filterByDate' | translate }}
+                </label>
+                <div class="relative">
+                    <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-amber-500 pointer-events-none z-10"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <input type="date" [value]="selectedDate" (change)="onDateChange($event)"
+                        class="pl-12 pr-6 py-3.5 bg-white border-2 border-slate-100 rounded-2xl font-bold text-slate-900 focus:outline-none focus:border-amber-500 focus:shadow-lg focus:shadow-amber-500/10 transition-all cursor-pointer shadow-sm min-w-[200px]">
+                </div>
+            </div>
         </div>
 
         <!-- Orders List -->
@@ -55,7 +73,8 @@
                             </span>
 
                             <!-- Download Invoice -->
-                            <button *ngIf="order.status === 'confirmed' || order.status === 'completed' || order.payment_status === 'paid'"
+                            <button
+                                *ngIf="order.status === 'confirmed' || order.status === 'completed' || order.payment_status === 'paid'"
                                 (click)="downloadInvoice(order)"
                                 class="p-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 hover:text-amber-600 transition-colors shadow-sm"
                                 title="{{ 'orders.downloadInvoice' | translate }}">
@@ -100,12 +119,14 @@
                                         <p class="font-bold text-slate-900">{{ item.name }}</p>
                                         <p class="text-sm text-slate-600">
                                             {{ 'orders.quantity' | translate }}: {{ item.quantity }} × {{
-                                            (item.unit_price_ttc || (item.unit_price * 1.2)) | priceFormat }} {{ order.amounts?.currency || 'MGA' }}
+                                            (item.unit_price_ttc || (item.unit_price * 1.2)) | priceFormat }} {{
+                                            order.amounts?.currency || 'MGA' }}
                                         </p>
                                     </div>
                                 </div>
                                 <div class="text-right">
-                                    <p class="font-black text-lg text-slate-900">{{ (item.total_price_ttc || (item.total_price * 1.2)) | priceFormat }} {{
+                                    <p class="font-black text-lg text-slate-900">{{ (item.total_price_ttc ||
+                                        (item.total_price * 1.2)) | priceFormat }} {{
                                         order.amounts?.currency || 'MGA' }}</p>
                                 </div>
                             </div>

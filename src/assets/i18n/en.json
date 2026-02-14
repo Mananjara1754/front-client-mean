@@ -160,6 +160,7 @@
     "orders": {
         "title": "My Orders",
         "subtitle": "Track your orders and their status",
+        "filterByDate": "Filter by date",
         "orderNumber": "Order",
         "status": {
             "pending": "Pending",

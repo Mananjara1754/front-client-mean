@@ -160,6 +160,7 @@
     "orders": {
         "title": "Mes Commandes",
         "subtitle": "Suivez vos commandes et leur statut",
+        "filterByDate": "Filtrer par date",
         "orderNumber": "Commande",
         "status": {
             "pending": "En attente",
