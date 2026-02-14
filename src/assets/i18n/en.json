@@ -129,7 +129,13 @@
         "rating": "Rating",
         "manager": "Manager",
         "contact": "Contact",
-        "itemsFound": "items found"
+        "itemsFound": "items found",
+        "stock": "Stock",
+        "categoryHeader": "Category",
+        "priceHistory": "Price History",
+        "details": "Details",
+        "priceTTC": "Price (TTC)",
+        "priceHT": "Price (HT)"
     },
     "cart": {
         "title": "My Cart",
@@ -222,7 +228,8 @@
         "previous": "Previous",
         "submit": "Submit",
         "reset": "Reset",
-        "addedToCart": "{{name}} added to cart!"
+        "addedToCart": "{{name}} added to cart!",
+        "price": "Price"
     },
     "list_shop": {
         "title": "Browse Shops"

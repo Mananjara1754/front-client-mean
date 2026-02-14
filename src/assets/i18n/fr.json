@@ -129,7 +129,13 @@
         "rating": "Note",
         "manager": "Gérant",
         "contact": "Contact",
-        "itemsFound": "articles trouvés"
+        "itemsFound": "articles trouvés",
+        "stock": "Stock",
+        "categoryHeader": "Catégorie",
+        "priceHistory": "Historique des prix",
+        "details": "Détails",
+        "priceTTC": "Prix (TTC)",
+        "priceHT": "Prix (HT)"
     },
     "cart": {
         "title": "Mon Panier",
@@ -222,7 +228,8 @@
         "previous": "Précédent",
         "submit": "Soumettre",
         "reset": "Réinitialiser",
-        "addedToCart": "{{name}} ajouté au panier !"
+        "addedToCart": "{{name}} ajouté au panier !",
+        "price": "Prix"
     },
     "list_shop": {
         "title": "Boutiques"
