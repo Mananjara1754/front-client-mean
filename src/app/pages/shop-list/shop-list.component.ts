@@ -47,12 +47,12 @@ export class ShopListComponent implements OnInit {
       return { isOpen: false, text: 'shopDetail.closed', details: '' };
     }
 
-    // Optional: check current time vs open/close time range
-    // For now, based on request "si il est ouvert mettre l'heure d'ouverture" - implies showing the range
+    const openDaysCount = Object.values(shop.opening_hours).filter((day: any) => !day.is_closed).length;
+
     return {
       isOpen: true,
       text: 'shopDetail.open',
-      details: `${dayHours.open} - ${dayHours.close}`
+      details: ` ${openDaysCount}/7`
     };
   }
 

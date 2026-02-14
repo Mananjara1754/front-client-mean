@@ -161,10 +161,12 @@ export class ShopDetailComponent implements OnInit, OnDestroy {
       return { isOpen: false, text: 'shopDetail.closed', details: '' };
     }
 
+    const openDaysCount = Object.values(this.shop.opening_hours).filter((day: any) => !day.is_closed).length;
+
     return {
       isOpen: true,
       text: 'shopDetail.open',
-      details: `${dayHours.open} - ${dayHours.close}`
+      details: ` ${openDaysCount}/7`
     };
   }
 
@@ -208,49 +210,49 @@ export class ShopDetailComponent implements OnInit, OnDestroy {
 
     // @ts-ignore
     import('chart.js/auto').then(({ Chart }) => {
-        const labels = product.price_history.map(h => new Date(h.from).toLocaleDateString());
-        const data = product.price_history.map(h => h.price);
+      const labels = product.price_history.map(h => new Date(h.from).toLocaleDateString());
+      const data = product.price_history.map(h => h.price);
 
-        this.chart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Price History',
-                    data: data,
-                    borderColor: '#f59e0b', // Amber 500
-                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.4,
-                    pointBackgroundColor: '#fff',
-                    pointBorderColor: '#f59e0b',
-                    pointRadius: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            color: '#f1f5f9'
-                        }
-                    },
-                    x: {
-                        grid: {
-                            display: false
-                        }
-                    }
-                }
+      this.chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Price History',
+            data: data,
+            borderColor: '#f59e0b', // Amber 500
+            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4,
+            pointBackgroundColor: '#fff',
+            pointBorderColor: '#f59e0b',
+            pointRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
             }
-        });
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: '#f1f5f9'
+              }
+            },
+            x: {
+              grid: {
+                display: false
+              }
+            }
+          }
+        }
+      });
     });
   }
 

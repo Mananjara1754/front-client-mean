@@ -53,7 +53,8 @@
                         class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(251,191,36,0.3),transparent)]">
                     </div>
                     <div class="relative h-full flex items-center justify-center overflow-hidden">
-                        <img *ngIf="shop.logo" [src]="shop.logo" alt="{{ shop.name }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        <img *ngIf="shop.logo" [src]="shop.logo" alt="{{ shop.name }}"
+                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
                         <span *ngIf="!shop.logo"
                             class="text-7xl opacity-60 group-hover:scale-125 transition-transform duration-700 ease-out">
                             🏪
@@ -98,18 +99,21 @@
                     <!-- Footer -->
                     <div class="pt-4 border-t border-slate-100 flex flex-col gap-3">
                         <ng-container *ngIf="getShopStatus(shop) as status">
-                            <span class="w-full flex justify-center items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg text-center"
+                            <span
+                                class="w-full flex justify-center items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg text-center"
                                 [ngClass]="status.isOpen ? 'text-emerald-600 bg-emerald-50' : 'text-rose-600 bg-rose-50'">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" *ngIf="status.isOpen">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                    *ngIf="status.isOpen">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" *ngIf="!status.isOpen">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                    *ngIf="!status.isOpen">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                                 {{ (status.isOpen ? 'shopDetail.open' : 'shopDetail.closed') | translate }}
-                                <span *ngIf="status.isOpen" class="ml-1">  {{ status.details }}</span>
+                                <span *ngIf="status.isOpen" class="ml-1"> {{ status.details }}</span>
                             </span>
                         </ng-container>
 
